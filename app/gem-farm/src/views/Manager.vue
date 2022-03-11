@@ -93,20 +93,20 @@ export default defineComponent({
     ConfigPane,
   },
   setup() {
-    const { wallet, getWallet } = useWallet();
+    const { wallet, publicKey } = useWallet();
     const { cluster, getConnection } = useCluster();
 
     let gf: any;
     watch([wallet, cluster], async () => {
-      gf = await initGemFarm(getConnection(), getWallet()!);
-      await findFarmsByManager(getWallet()!.publicKey!);
+      gf = await initGemFarm(getConnection(), wallet.value!);
+      await findFarmsByManager(publicKey.value);
     });
 
     //needed in case we switch in from another window
     onMounted(async () => {
-      if (getWallet() && getConnection()) {
-        gf = await initGemFarm(getConnection(), getWallet()!);
-        await findFarmsByManager(getWallet()!.publicKey!);
+      if (wallet.value && getConnection()) {
+        gf = await initGemFarm(getConnection(), wallet.value!);
+        await findFarmsByManager(publicKey.value!);
       }
     });
 
@@ -148,16 +148,16 @@ export default defineComponent({
 
     const handleNewFarm = async (newFarm: string) => {
       showNewFarm.value = false;
-      await findFarmsByManager(getWallet()!.publicKey!);
+      await findFarmsByManager(publicKey.value!);
       farm.value = newFarm;
     };
 
     const handleUpdateFarm = async () => {
-      await findFarmsByManager(getWallet()!.publicKey!);
+      await findFarmsByManager(publicKey.value);
     };
 
     const refreshFarms = async () => {
-      await findFarmsByManager(getWallet()!.publicKey!);
+      await findFarmsByManager(publicKey.value);
     };
 
     return {

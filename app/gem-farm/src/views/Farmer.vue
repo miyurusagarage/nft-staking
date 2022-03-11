@@ -3,24 +3,15 @@
   <div v-if="!wallet" class="text-center">Pls connect (burner) wallet</div>
   <div v-else>
     <!--farm address-->
-    <div class="nes-container with-title mb-10">
+    <!-- <div class="nes-container with-title mb-10">
       <p class="title">Connect to a Farm</p>
       <div class="nes-field mb-5">
         <label for="farm">Farm address:</label>
         <input id="farm" class="nes-input" v-model="farm" />
       </div>
-    </div>
+    </div> -->
 
     <div v-if="farmerAcc">
-      <FarmerDisplay
-        :key="farmerAcc"
-        :farm="farm"
-        :farmAcc="farmAcc"
-        :farmer="farmer"
-        :farmerAcc="farmerAcc"
-        class="mb-10"
-        @refresh-farmer="handleRefreshFarmer"
-      />
       <Vault
         :key="farmerAcc"
         class="mb-10"
@@ -59,6 +50,15 @@
           Claim {{ availableA }} A / {{ availableB }} B
         </button>
       </Vault>
+      <FarmerDisplay
+        :key="farmerAcc"
+        :farm="farm"
+        :farmAcc="farmAcc"
+        :farmer="farmer"
+        :farmerAcc="farmerAcc"
+        class="mb-10"
+        @refresh-farmer="handleRefreshFarmer"
+      />
     </div>
     <div v-else>
       <div class="w-full text-center mb-5">
@@ -88,7 +88,7 @@ import { findFarmerPDA, stringifyPKsAndBNs } from '@gemworks/gem-farm-ts';
 export default defineComponent({
   components: { Vault, FarmerDisplay, ConfigPane },
   setup() {
-    const { wallet, getWallet } = useWallet();
+    const { wallet, publicKey } = useWallet();
     const { cluster, getConnection } = useCluster();
 
     let gf: any;
@@ -111,6 +111,8 @@ export default defineComponent({
 
     const availableA = ref<string>();
     const availableB = ref<string>();
+
+    farm.value = "5gr1TSwzymmfkpgNVER9GQm33HrAB229RVrtVAVKWMMD";
 
     //auto loading for when farm changes
     watch(farm, async () => {
@@ -137,9 +139,9 @@ export default defineComponent({
     const fetchFarmer = async () => {
       const [farmerPDA] = await findFarmerPDA(
         new PublicKey(farm.value!),
-        getWallet()!.publicKey!
+        publicKey.value!
       );
-      farmerIdentity.value = getWallet()!.publicKey?.toBase58();
+      farmerIdentity.value = publicKey.value?.toBase58();
       farmerAcc.value = await gf.fetchFarmerAcc(farmerPDA);
       farmerState.value = gf.parseFarmerState(farmerAcc.value);
       await updateAvailableRewards();
@@ -150,9 +152,9 @@ export default defineComponent({
     };
 
     const freshStart = async () => {
-      if (getWallet() && getConnection()) {
-        gf = await initGemFarm(getConnection(), getWallet()!);
-        farmerIdentity.value = getWallet()!.publicKey?.toBase58();
+      if (wallet.value && getConnection()) {
+        gf = await initGemFarm(getConnection(), wallet.value!);
+        farmerIdentity.value = publicKey.value?.toBase58();
 
         //reset stuff
         farmAcc.value = undefined;

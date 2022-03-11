@@ -142,20 +142,20 @@ export default defineComponent({
   },
   emits: ['update-farm'],
   setup(props, ctx) {
-    const { wallet, getWallet } = useWallet();
+    const { wallet, publicKey } = useWallet();
     const { cluster, getConnection } = useCluster();
 
     let gf: any;
     watch([wallet, cluster], async () => {
-      if (getWallet() && getConnection()) {
-        gf = await initGemFarm(getConnection(), getWallet()!);
+      if (wallet.value && getConnection()) {
+        gf = await initGemFarm(getConnection(), wallet.value!);
       }
     });
 
     //need an onmounted hook because this component isn't yet mounted when wallet/cluster are set
     onMounted(async () => {
-      if (getWallet() && getConnection()) {
-        gf = await initGemFarm(getConnection(), getWallet()!);
+      if (wallet.value && getConnection()) {
+        gf = await initGemFarm(getConnection(), wallet.value!);
         setRewardType(selectedReward.value);
       }
     });

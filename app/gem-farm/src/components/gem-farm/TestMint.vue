@@ -21,13 +21,13 @@ import { BrowserWallet } from '@gemworks/gem-farm-ts';
 
 export default defineComponent({
   setup() {
-    const { getWallet } = useWallet();
+    const { wallet } = useWallet();
     const { getConnection } = useCluster();
 
     const mint = ref<string>();
 
     const createTestReward = async () => {
-      const bw = new BrowserWallet(getConnection(), getWallet() as any);
+      const bw = new BrowserWallet(getConnection(), wallet.value as any);
 
       const { mint: rewardMint } = await bw.createMintAndFundATA(0, 1000000);
       mint.value = rewardMint.toBase58();

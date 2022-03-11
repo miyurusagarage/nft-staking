@@ -53,18 +53,18 @@ export default defineComponent({
   },
   emits: ['update-farm'],
   setup(props, ctx) {
-    const { wallet, getWallet } = useWallet();
+    const { wallet, publicKey } = useWallet();
     const { cluster, getConnection } = useCluster();
 
     let gf: any;
     watch([wallet, cluster], async () => {
-      gf = await initGemFarm(getConnection(), getWallet()!);
+      gf = await initGemFarm(getConnection(), wallet.value!);
     });
 
     //needed coz mounts later
     onMounted(async () => {
-      if (getWallet() && getConnection()) {
-        gf = await initGemFarm(getConnection(), getWallet()!);
+      if (wallet.value && getConnection()) {
+        gf = await initGemFarm(getConnection(), wallet.value!);
       }
     });
 

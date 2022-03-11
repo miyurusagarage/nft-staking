@@ -80,7 +80,7 @@ export default defineComponent({
   },
   emits: ['selected-wallet-nft'],
   setup(props, ctx) {
-    const { wallet, getWallet } = useWallet();
+    const { wallet, publicKey } = useWallet();
     const { cluster, getConnection } = useCluster();
 
     // --------------------------------------- state
@@ -106,9 +106,9 @@ export default defineComponent({
       selectedWalletNFTs.value = [];
       desiredWalletNFTs.value = [];
 
-      if (getWallet()) {
+      if (wallet.value) {
         currentWalletNFTs.value = await getNFTsByOwner(
-          getWallet()!.publicKey!,
+          publicKey.value!,
           getConnection()
         );
         desiredWalletNFTs.value = [...currentWalletNFTs.value];
@@ -137,6 +137,7 @@ export default defineComponent({
         console.log(
           `populated a total of ${currentVaultNFTs.value.length} vault NFTs`
         );
+        console.log(desiredVaultNFTs.value)
       }
     };
 
@@ -147,14 +148,14 @@ export default defineComponent({
     };
 
     watch([wallet, cluster], async () => {
-      gb = await initGemBank(getConnection(), getWallet()!);
+      gb = await initGemBank(getConnection(), wallet.value);
 
       //populate wallet + vault nfts
       await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
     });
 
     onMounted(async () => {
-      gb = await initGemBank(getConnection(), getWallet()!);
+      gb = await initGemBank(getConnection(), wallet.value);
 
       //prep vault + bank variables
       vault.value = new PublicKey(props.vault!);

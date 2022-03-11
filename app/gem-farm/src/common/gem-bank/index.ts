@@ -6,7 +6,7 @@ import {
   WhitelistType,
 } from '@gemworks/gem-farm-ts';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { Adapter, SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { NodeWallet, programs } from '@metaplex/js';
 
 //when we only want to view vaults, no need to connect a real wallet.
@@ -25,7 +25,7 @@ export function createFakeWallet() {
 //need a separate func coz fetching IDL is async and can't be done in constructor
 export async function initGemBank(
   conn: Connection,
-  wallet?: SignerWalletAdapter
+  wallet?: Adapter
 ) {
   const walletToUse = wallet ?? createFakeWallet();
   const idl = await (await fetch('gem_bank.json')).json();

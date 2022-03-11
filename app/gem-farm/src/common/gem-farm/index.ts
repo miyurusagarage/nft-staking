@@ -1,5 +1,5 @@
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { Adapter, SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { BN, Idl } from '@project-serum/anchor';
 import { createFakeWallet } from '@/common/gem-bank';
 import {
@@ -16,7 +16,7 @@ import { programs } from '@metaplex/js';
 
 export async function initGemFarm(
   conn: Connection,
-  wallet?: SignerWalletAdapter
+  wallet?: Adapter
 ) {
   const walletToUse = wallet ?? createFakeWallet();
   const farmIdl = await (await fetch('gem_farm.json')).json();

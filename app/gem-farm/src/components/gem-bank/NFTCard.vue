@@ -4,6 +4,7 @@
     :class="{ 'card-selected': selected }"
     @click="toggleSelect"
   >
+    <p>{{nft.onchainMetadata.data.name}}</p>
     <img
       :src="nft.externalMetadata.image"
       :alt="nft.onchainMetadata.data.name"

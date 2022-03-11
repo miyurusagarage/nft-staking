@@ -1,12 +1,7 @@
 <template>
-  <nav class="bg-black flex flex-row justify-center align-middle">
-    <NavButton
-      v-for="i in menu"
-      :key="i.name"
-      :title="i.name"
-      :url="i.url"
-      :class="{ active: path === i.url }"
-    />
+  <nav class="bg-black flex flex-row justify-between items-center p-4">
+    <img src="../assets/juju-logo.png" style="height: 100px"/>
+    <TheCat />
   </nav>
 </template>
 
@@ -14,9 +9,10 @@
 import { defineComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import NavButton from '@/components/NavButton.vue';
+import TheCat from '@/components/gem-farm/TheCat';
 
 export default defineComponent({
-  components: { NavButton },
+  components: { NavButton, TheCat },
   setup() {
     const route = useRoute();
     const path = computed(() => route.path);
