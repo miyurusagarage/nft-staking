@@ -1,8 +1,9 @@
 <template>
   <div class="nes-container with-title">
     <p class="title">{{ title }}</p>
+    <hr/>
     <slot />
-    <div class="flex flex-wrap">
+    <div class="flex flex-wrap flex-row card-container gap-1">
       <NFTCard
         v-for="nft in nfts"
         :key="nft"

@@ -1,11 +1,9 @@
 <template>
-  <div class="relative h-full min-h-screen">
+  <div class="relative h-full min-h-screen container mx-auto" style="padding-bottom:120px">
     <TheNavBar />
-    <div class="p-10">
+    <div class="p-5 pt-5">
       <router-view />
     </div>
-
-    <div class="pt-10"></div>
     <TheFooter />
   </div>
 </template>
@@ -20,7 +18,7 @@ export default {
 
 <style>
 * {
-  font-family: monospace;
+  font-family: 'Oxanium', monospace;
 }
 input[type='radio']:checked + span {
   @apply text-black;

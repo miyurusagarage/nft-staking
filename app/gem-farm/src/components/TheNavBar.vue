@@ -1,6 +1,6 @@
 <template>
-  <nav class="bg-black flex flex-row justify-between items-center p-4">
-    <img src="../assets/juju-logo.png" style="height: 100px"/>
+  <nav class="flex flex-row justify-between items-center py-2 px-5">
+    <img src="../assets/juju-logo.png" style="height: 70px"/>
     <TheCat />
   </nav>
 </template>
@@ -9,7 +9,7 @@
 import { defineComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import NavButton from '@/components/NavButton.vue';
-import TheCat from '@/components/gem-farm/TheCat';
+import TheCat from '@/components/gem-farm/TheCat.vue';
 
 export default defineComponent({
   components: { NavButton, TheCat },

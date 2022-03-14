@@ -1,8 +1,8 @@
 
    
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 import App from './App.vue'
-import { initWallet } from 'solana-wallets-vue';
+import Antd from 'ant-design-vue';
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base"
 import router from './router';
 import './index.css';
@@ -12,6 +12,7 @@ import SolanaWallets from 'solana-wallets-vue';
 
 // You can either import the default styles or create your own.
 import 'solana-wallets-vue/styles.css';
+import 'ant-design-vue/dist/antd.css';
 
 import {
   PhantomWalletAdapter,
@@ -32,5 +33,6 @@ const walletOptions = {
 
 createApp(App)
 .use(router)
+.use(Antd)
 .use(SolanaWallets, walletOptions)
 .mount('#app');

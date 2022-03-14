@@ -4,6 +4,6 @@ import { WalletMultiButton } from 'solana-wallets-vue'
 
 <template>
   <div class="flex justify-center">
-    <wallet-multi-button></wallet-multi-button>
+    <wallet-multi-button dark></wallet-multi-button>
   </div>
 </template>

@@ -1,14 +1,17 @@
 <template>
   <div
-    class="m-1 card flex justify-center"
+    class="p-2 card grow-0"
     :class="{ 'card-selected': selected }"
     @click="toggleSelect"
   >
-    <p>{{nft.onchainMetadata.data.name}}</p>
-    <img
-      :src="nft.externalMetadata.image"
-      :alt="nft.onchainMetadata.data.name"
-    />
+    <div class="justify-center flex-col flex overflow-hidden">
+      <div style="white-space: nowrap; font-weight: bold;" class="text-xl pb-2">{{nft.onchainMetadata.data.name}}</div>
+      <img
+        class="nft-image"
+        :src="nft.externalMetadata.image"
+        :alt="nft.onchainMetadata.data.name"
+      />
+    </div>
   </div>
 </template>
 
@@ -41,23 +44,46 @@ export default defineComponent({
 
 <style scoped>
 img {
-  max-width: 100%;
-  max-height: 100%;
-  height: auto;
-  width: auto;
+  object-fit: cover;
+  aspect-ratio: 1;
 }
 
 .card {
-  width: 150px;
-  height: 150px;
+  overflow: hidden;
+  flex-basis: calc(100% - 0.25rem);
 }
 
-.card:hover {
-  @apply border-4 border-solid border-gray-200;
+@media screen and (min-width: 500px) {
+  .card {
+    flex-basis: calc(50% - 0.25rem);
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .card {
+    flex-basis: calc(50% - 0.25rem);
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .card {
+    flex-basis: calc(33.2% - 0.25rem);
+  }
+}
+
+@media screen and (min-width: 1536px) {
+  .card {
+    flex-basis: calc(25% - 0.25rem);
+  }
 }
 
 .card-selected {
-  @apply border-4 border-solid;
-  border-color: black !important;
+  @apply border-4 border-solid rounded-md;
+  border-color: #e5e5e5 !important;
 }
+
+.nft-image {
+  @apply rounded-md;
+}
+
 </style>

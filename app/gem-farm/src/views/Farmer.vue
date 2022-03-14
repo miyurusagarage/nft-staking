@@ -1,6 +1,8 @@
 <template>
   <ConfigPane />
-  <div v-if="!wallet" class="text-center">Pls connect (burner) wallet</div>
+  <div v-if="!wallet" class="text-center text-2xl" style="padding-top:40vh">
+    Please connect your wallet using the menu button
+    </div>
   <div v-else>
     <!--farm address-->
     <!-- <div class="nes-container with-title mb-10">
@@ -15,59 +17,84 @@
       <Vault
         :key="farmerAcc"
         class="mb-10"
+        @start-stake="beginStaking"
+        @end-stake="endStaking"
+        :endStake="endStaking"
         :vault="farmerAcc.vault.toBase58()"
         @selected-wallet-nft="handleNewSelectedNFT"
       >
-        <button
-          v-if="farmerState === 'staked' && selectedNFTs.length > 0"
-          class="nes-btn is-primary mr-5"
-          @click="addGems"
-        >
-          Add Gems (resets staking)
-        </button>
-        <button
-          v-if="farmerState === 'unstaked'"
-          class="nes-btn is-success mr-5"
-          @click="beginStaking"
-        >
-          Begin staking
-        </button>
-        <button
-          v-if="farmerState === 'staked'"
-          class="nes-btn is-error mr-5"
-          @click="endStaking"
-        >
-          End staking
-        </button>
-        <button
-          v-if="farmerState === 'pendingCooldown'"
-          class="nes-btn is-error mr-5"
-          @click="endStaking"
-        >
-          End cooldown
-        </button>
-        <button class="nes-btn is-warning" @click="claim">
-          Claim {{ availableA }} A / {{ availableB }} B
-        </button>
+        
       </Vault>
-      <FarmerDisplay
-        :key="farmerAcc"
-        :farm="farm"
-        :farmAcc="farmAcc"
-        :farmer="farmer"
-        :farmerAcc="farmerAcc"
-        class="mb-10"
-        @refresh-farmer="handleRefreshFarmer"
-      />
+      
+      <br/>
+      <br/>
+
+      <div class="nes-container with-title">
+        <p class="title">Your Staking Account</p>
+        <hr/>
+        <div class="card-container mt-3">
+
+          <div class="text-lg flex flex-row flex-wrap gap-4">
+            <a-button type="primary" size="large" @click="handleRefreshFarmer">
+              Refresh staking account
+            </a-button>
+            <a-button type="primary" size="large" @click="claim" :disabled="availableA <= 0">
+              Claim {{availableA}} Accrued JU
+            </a-button>
+          </div>
+          <br/>
+          <div class="text-lg">Total NFTs staked: {{ farmerAcc.gemsStaked }}</div>
+          <br/>
+          <div class="text-lg">Reward Rate : 1.2 JU per day for one NFT</div>
+          <br/>
+          <div class="text-lg flex flex-row align-center">
+            <div class="mr-4">JU to be paid out : {{availableA}} JU</div>
+          </div>
+          <br/>
+          <div class="text-lg flex flex-row">
+            <div class="text-lg">JU Paid out : {{farmerAcc.rewardB.paidOutReward}}</div>
+          </div>
+        </div>
+      </div>
+
+
+      <button
+        v-if="farmerState === 'staked' && selectedNFTs.length > 0"
+        class="nes-btn is-primary mr-5"
+        @click="addGems"
+      >
+        Add Gems (resets staking)
+      </button>
+      <button
+        v-if="farmerState === 'staked'"
+        class="nes-btn is-error mr-5"
+        @click="endStaking"
+      >
+        End staking
+      </button>
+      <button
+        v-if="farmerState === 'pendingCooldown'"
+        class="nes-btn is-error mr-5"
+        @click="endStaking"
+      >
+        End cooldown
+      </button>
     </div>
     <div v-else>
-      <div class="w-full text-center mb-5">
-        Farmer account not found :( Create a new one?
+      <div v-if="wallet && publicKey">
+        <div class="w-full text-center mb-5 text-2xl mt-20 mb-10">
+          Staking account not found for Wallet.
+          <br/>
+          Please create a new account
+        </div>
+        <div class="w-full text-center">
+          <a-button type="primary" size="large" @click="initFarmer">
+            Create Staking Account
+          </a-button>
+        </div>
       </div>
-      <div class="w-full text-center">
-        <button class="nes-btn is-primary" @click="initFarmer">
-          New Farmer
-        </button>
+      <div v-else style="padding-top:40vh">
+        <div class="text-2xl w-full text-center">Connecting to Wallet in Progress</div>
       </div>
     </div>
   </div>
@@ -94,7 +121,7 @@ export default defineComponent({
     let gf: any;
     watch([wallet, cluster], async () => {
       await freshStart();
-    });
+    }, {deep: true});
 
     //needed in case we switch in from another window
     onMounted(async () => {
@@ -186,7 +213,7 @@ export default defineComponent({
 
     const endStaking = async () => {
       await gf.unstakeWallet(new PublicKey(farm.value!));
-      await fetchFarmer();
+      // await fetchFarmer();
       selectedNFTs.value = [];
     };
 
@@ -245,6 +272,7 @@ export default defineComponent({
 
     return {
       wallet,
+      publicKey,
       farm,
       farmAcc,
       farmer: farmerIdentity,

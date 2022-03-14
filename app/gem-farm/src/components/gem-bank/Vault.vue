@@ -1,11 +1,12 @@
 <template>
   <!--control buttons-->
-  <div class="mb-10 flex justify-center">
+  <div 
+    v-if="
+          (toWalletNFTs && toWalletNFTs.length) ||
+          (toVaultNFTs && toVaultNFTs.length)
+        "
+    class="mb-10 flex justify-center">
     <button
-      v-if="
-        (toWalletNFTs && toWalletNFTs.length) ||
-        (toVaultNFTs && toVaultNFTs.length)
-      "
       class="nes-btn is-primary mr-5"
       @click="moveNFTsOnChain"
     >
@@ -15,50 +16,77 @@
   </div>
 
   <!--wallet + vault view-->
-  <div class="flex items-stretch">
+  <div class="flex items-stretch flex-wrap gap-3">
     <!--left-->
-    <NFTGrid
-      title="Your wallet"
-      class="flex-1"
-      :nfts="desiredWalletNFTs"
-      @selected="handleWalletSelected"
-    />
+    <div class="flex-1">
+     
+      <a-select
+          v-model:value="collectionFilter"
+          mode="multiple"
+          style="width: 100%"
+          placeholder="Filter by NFT collection"
+          option-label-prop="label"
+          class="mb-3"
+          size="large"
+        >
+          <a-select-option value="Collection_Name" label="JuJu Devils">
+            <div class="flex flex-row">
+              <span><img style="width: 40px" src="../../assets/juju-logo.png"></span>
+              <div class="ml-5 flex items-center">
+                <div class="text-lg">JuJu Devils</div>
+              </div>
+            </div>
+          </a-select-option>
+      </a-select>
 
-    <!--mid-->
-    <div class="m-2 flex flex-col">
-      <ArrowButton
-        :disabled="vaultLocked"
-        class="my-2"
-        @click="moveNFTsFE(false)"
-      />
-      <ArrowButton
-        :disabled="vaultLocked"
-        class="my-2"
-        :left="true"
-        @click="moveNFTsFE(true)"
-      />
+      <NFTGrid
+        class="flex-1"
+        title="Your wallet"
+        :nfts="computedDesiredWalletNFTs"
+        @selected="handleWalletSelected"
+      >
+
+      </NFTGrid>
+
+      <a-button
+        class="w-full mt-3"
+        type="primary" 
+        size="large"
+        block
+        @click="stakeNFTs"
+        :disabled="selectedWalletNFTs.length < 1"
+      >
+        Stake selected {{selectedWalletNFTs.length}} NFTs
+      </a-button>
     </div>
 
     <!--right-->
-    <NFTGrid
-      v-if="bank && vault"
-      title="Your vault"
-      class="flex-1"
-      :nfts="desiredVaultNFTs"
-      @selected="handleVaultSelected"
-    >
-      <div
-        v-if="vaultLocked"
-        class="locked flex-col justify-center items-center align-center"
+    <div class="flex-1 flex flex-col self-stretch">
+      <NFTGrid
+        v-if="bank && vault"
+        title="Staking vault"
+        class="flex-1 justify-self-stretch"
+        :nfts="desiredVaultNFTs"
+        @selected="handleVaultSelected"
       >
-        <p class="mt-10">This vault is locked!</p>
-      </div>
-    </NFTGrid>
+      </NFTGrid>
+      <a-button
+        size="large"
+        class="w-full mt-3"
+        type="primary" 
+        block
+        @click="unstakeNFTs"
+        :left="true"
+        :disabled="selectedVaultNFTs.length < 1"
+      >
+        Unstake selected {{selectedVaultNFTs.length}} NFTs
+      </a-button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, ref, watch, computed } from 'vue';
 import NFTGrid from '@/components/gem-bank/NFTGrid.vue';
 import ArrowButton from '@/components/ArrowButton.vue';
 import useWallet from '@/composables/wallet';
@@ -77,8 +105,9 @@ export default defineComponent({
   components: { ArrowButton, NFTGrid },
   props: {
     vault: String,
+    endStake: Function
   },
-  emits: ['selected-wallet-nft'],
+  emits: ['selected-wallet-nft', 'start-stake', 'end-stake'],
   setup(props, ctx) {
     const { wallet, publicKey } = useWallet();
     const { cluster, getConnection } = useCluster();
@@ -98,6 +127,9 @@ export default defineComponent({
     const toWalletNFTs = ref<INFT[]>([]);
     const toVaultNFTs = ref<INFT[]>([]);
 
+    const collectionFilter = ref<string[]>(["Collection_Name"]);
+    const enabledCollections = ["Collection_Name", "numbers"]
+
     // --------------------------------------- populate initial nfts
 
     const populateWalletNFTs = async () => {
@@ -112,6 +144,8 @@ export default defineComponent({
           getConnection()
         );
         desiredWalletNFTs.value = [...currentWalletNFTs.value];
+
+        console.log(desiredWalletNFTs.value);
       }
     };
 
@@ -186,23 +220,34 @@ export default defineComponent({
       }
     };
 
-    const moveNFTsFE = (moveLeft: boolean) => {
-      if (moveLeft) {
-        //push selected vault nfts into desired wallet
-        desiredWalletNFTs.value.push(...selectedVaultNFTs.value);
-        //remove selected vault nfts from desired vault
-        removeManyFromList(selectedVaultNFTs.value, desiredVaultNFTs.value);
-        //empty selection list
-        selectedVaultNFTs.value = [];
-      } else {
-        //push selected wallet nfts into desired vault
+    const unstakeNFTs = () => {
+      //push selected vault nfts into desired wallet
+      desiredWalletNFTs.value.push(...selectedVaultNFTs.value);
+      //remove selected vault nfts from desired vault
+      removeManyFromList(selectedVaultNFTs.value, desiredVaultNFTs.value);
+      //empty selection list
+      selectedVaultNFTs.value = [];
+      setTimeout(async () => {
+        var endStake = props.endStake as Function;
+        await endStake();
+        await endStake();
+        await withdrawNFTsFromChain();
+        await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
+      }, 1000);
+    };
+
+    const stakeNFTs = () => {
+      //push selected wallet nfts into desired vault
         desiredVaultNFTs.value.push(...selectedWalletNFTs.value);
         //remove selected wallet nfts from desired wallet
         removeManyFromList(selectedWalletNFTs.value, desiredWalletNFTs.value);
         //empty selected walelt
         selectedWalletNFTs.value = [];
-      }
-    };
+        setTimeout(async () => {
+          await moveNFTsOnChain();
+          ctx.emit('start-stake');
+        }, 1000);
+    }
 
     //todo jam into single tx
     const moveNFTsOnChain = async () => {
@@ -215,11 +260,15 @@ export default defineComponent({
         console.log('creator is', creator.toBase58());
         await depositGem(nft.mint, creator, nft.pubkey!);
       }
+      
+      // await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
+    };
+
+    const withdrawNFTsFromChain = async () => {
       for (const nft of toWalletNFTs.value) {
         await withdrawGem(nft.mint);
       }
-      await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
-    };
+    }
 
     //to vault = vault desired - vault current
     watch(
@@ -284,20 +333,33 @@ export default defineComponent({
 
     // --------------------------------------- return
 
+    const computedDesiredWalletNFTs = computed(()=> {
+      // if (!collectionFilter || collectionFilter.value.length == 0 || !desiredWalletNFTs.value) return desiredWalletNFTs;
+      var filteredNFTs = desiredWalletNFTs.value.filter(i => collectionFilter.value.length < 1 || (i.externalMetadata as any).collection && collectionFilter.value.indexOf((i.externalMetadata as any).collection.name) != -1);
+      return filteredNFTs.filter(i => (i.externalMetadata as any).collection && enabledCollections.indexOf((i.externalMetadata as any).collection.name) != -1);
+    });
+
     return {
       wallet,
       desiredWalletNFTs,
       desiredVaultNFTs,
+      selectedWalletNFTs,
+      selectedVaultNFTs,
       toVaultNFTs,
       toWalletNFTs,
       handleWalletSelected,
       handleVaultSelected,
-      moveNFTsFE,
+      stakeNFTs,
+      unstakeNFTs,
       moveNFTsOnChain,
+      withdrawNFTsFromChain,
       bank,
       // eslint-disable-next-line vue/no-dupe-keys
       vault,
       vaultLocked,
+      collectionFilter,
+      computedDesiredWalletNFTs,
+      enabledCollections
     };
   },
 });

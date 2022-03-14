@@ -3,6 +3,100 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    background-color: white;
+#app {
+    background-image: url("./assets/background-website.jpeg") !important;
+    background-position: 50%;
+    background-size: cover;
+}
+
+.nes-container {
+    padding: 1rem 1rem 0.5rem;
+    border-width: 0px !important;
+    border-radius: 6px;
+    border-color: #e5e5e5;
+    min-height: 200px;
+    background-color: rgba(16,16,80,.66);
+    min-width: 350px !important;
+}
+
+.nes-container.with-title>.title {
+    background-color: transparent !important;
+    display: block;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 2rem;
+}
+
+.card-container {
+    padding-top: 0.5rem;
+}
+
+.ant-select-selection-item {
+    align-items: center;
+}
+
+.ant-select-selection-item-remove {
+    display: flex !important;
+}
+
+p {
+    margin-bottom: 0 !important;
+}
+
+.ant-select {
+    margin-bottom: 20px !important;
+    background: #0f19429c !important;
+    border: 2px solid #6e6e6e !important;
+    border-radius: 7px !important;
+    color: #fff !important;
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background: #0f19429c !important;
+    border: 2px solid #6e6e6e !important;
+    border-radius: 7px !important;
+}
+
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background: #0f1942 !important;
+}
+
+.ant-select-dropdown {
+    background: #0f1942 !important;
+}
+
+.ant-select-multiple .ant-select-selection-item {
+    background: #0f1942 !important;
+}
+
+html {
+    cursor: default !important;
+}
+
+.ant-btn-primary {
+    background-color:#4f46e5 !important;
+    color: white !important; 
+    border-color: transparent !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+}
+
+.ant-btn-primary:hover{
+    background:#4338ca !important;
+}
+
+.ant-btn-primary[disabled] {
+    background: #f5f5f5 !important;
+}
+
+.ant-btn-primary[disabled] span {
+    color: #AAA !important; 
+}
+
+.swv-modal-title {
+    color: white;
+}
+
+* {
+    color: white;
 }
