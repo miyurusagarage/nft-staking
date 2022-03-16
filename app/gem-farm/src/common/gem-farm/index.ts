@@ -11,7 +11,7 @@ import {
   findWhitelistProofPDA,
   GEM_FARM_PROG_ID,
   GEM_BANK_PROG_ID,
-} from '@gemworks/gem-farm-ts';
+} from '@/gem-local';
 import { programs } from '@metaplex/js';
 
 export async function initGemFarm(
@@ -207,7 +207,7 @@ export class GemFarm extends GemFarmClient {
   }
 
   async refreshFarmerWallet(farm: PublicKey, farmerIdentity: PublicKey) {
-    const result = await this.refreshFarmer(farm, farmerIdentity);
+    const result = await this.refreshFarmer(farm, farmerIdentity, true);
 
     console.log('refreshed farmer', farmerIdentity.toBase58());
 
@@ -254,6 +254,59 @@ export class GemFarm extends GemFarmClient {
   async unstakeWallet(farm: PublicKey) {
     const result = await this.unstake(farm, this.wallet.publicKey);
 
+    console.log('ended staking for farmer', this.wallet.publicKey.toBase58());
+
+    return result;
+  }
+
+  async unstakeThenDepositAndStakeWallet(
+    farm: PublicKey, 
+    bank: PublicKey,
+    vault: PublicKey,
+    gemAmount: BN,
+    gemMint: PublicKey,
+    gemSource: PublicKey,
+    creator: PublicKey) {
+
+    const [mintProof, bump] = await findWhitelistProofPDA(bank, gemMint);
+    const [creatorProof, bump2] = await findWhitelistProofPDA(bank, creator);
+    const metadata = await programs.metadata.Metadata.getPDA(gemMint);
+
+    const result = await this.unstakeThenDepositAndStake(
+      farm, 
+      this.wallet.publicKey,
+      bank,
+      vault,
+      this.wallet.publicKey,
+      gemAmount,
+      gemMint,
+      gemSource,
+      mintProof,
+      metadata,
+      creatorProof);
+    
+    console.log('ended staking for farmer', this.wallet.publicKey.toBase58());
+
+    return result;
+  }
+
+  async unstakeThenWithdrawAndStakeWallet(
+    farm: PublicKey, 
+    bank: PublicKey,
+    vault: PublicKey,
+    gemAmount: BN,
+    gemMint: PublicKey) {
+
+    const result = await this.unstakeThenWithdrawAndStake(
+      farm, 
+      this.wallet.publicKey,
+      bank,
+      vault,
+      this.wallet.publicKey,
+      gemAmount,
+      gemMint,
+      this.wallet.publicKey);
+    
     console.log('ended staking for farmer', this.wallet.publicKey.toBase58());
 
     return result;

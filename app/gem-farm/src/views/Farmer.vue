@@ -13,14 +13,18 @@
       </div>
     </div> -->
 
-    <div v-if="farmerAcc">
+    <div v-if="farmerAcc && wallet && publicKey">
       <Vault
         :key="farmerAcc"
         class="mb-10"
-        @start-stake="beginStaking"
-        @end-stake="endStaking"
         :endStake="endStaking"
+        :startStake="beginStaking"
+        :depositAndBeginStaking="depositAndBeginStaking"
+        :withdrawAndBeginStaking="withdrawAndBeginStaking"
+        :addNFTs="addGems"
         :vault="farmerAcc.vault.toBase58()"
+        :farmerState="farmerState"
+        :refreshFarmer="handleRefreshFarmer"
         @selected-wallet-nft="handleNewSelectedNFT"
       >
         
@@ -38,27 +42,29 @@
             <a-button type="primary" size="large" @click="handleRefreshFarmer">
               Refresh staking account
             </a-button>
-            <a-button type="primary" size="large" @click="claim" :disabled="availableA <= 0">
-              Claim {{availableA}} Accrued JU
+            <a-button type="primary" size="large" @click="claim" :disabled="availableB <= 0">
+              Claim {{availableB}} Accrued JU
             </a-button>
           </div>
+          <br/>
+          <div class="text-lg capitalize">Staking Status: {{ farmerState }}</div>
           <br/>
           <div class="text-lg">Total NFTs staked: {{ farmerAcc.gemsStaked }}</div>
           <br/>
           <div class="text-lg">Reward Rate : 1.2 JU per day for one NFT</div>
           <br/>
           <div class="text-lg flex flex-row align-center">
-            <div class="mr-4">JU to be paid out : {{availableA}} JU</div>
+            <div class="mr-4">JU to be paid out : {{availableB}} JU</div>
           </div>
           <br/>
           <div class="text-lg flex flex-row">
-            <div class="text-lg">JU Paid out : {{farmerAcc.rewardB.paidOutReward}}</div>
+            <div class="text-lg">JU Paid out : {{farmerAcc.rewardB.paidOutReward}} JU</div>
           </div>
         </div>
       </div>
 
 
-      <button
+      <!-- <button
         v-if="farmerState === 'staked' && selectedNFTs.length > 0"
         class="nes-btn is-primary mr-5"
         @click="addGems"
@@ -78,7 +84,7 @@
         @click="endStaking"
       >
         End cooldown
-      </button>
+      </button> -->
     </div>
     <div v-else>
       <div v-if="wallet && publicKey">
@@ -110,6 +116,7 @@ import ConfigPane from '@/components/ConfigPane.vue';
 import FarmerDisplay from '@/components/gem-farm/FarmerDisplay.vue';
 import Vault from '@/components/gem-bank/Vault.vue';
 import { INFT } from '@/common/web3/NFTget';
+import { BN } from '@project-serum/anchor';
 import { findFarmerPDA, stringifyPKsAndBNs } from '@gemworks/gem-farm-ts';
 
 export default defineComponent({
@@ -150,6 +157,9 @@ export default defineComponent({
       availableA.value = farmerAcc.value.rewardA.accruedReward
         .sub(farmerAcc.value.rewardA.paidOutReward)
         .toString();
+      
+      var accrued = farmerAcc.value.rewardB.accruedReward;
+      console.log("accured" + accrued);
       availableB.value = farmerAcc.value.rewardB.accruedReward
         .sub(farmerAcc.value.rewardB.paidOutReward)
         .toString();
@@ -211,6 +221,28 @@ export default defineComponent({
       selectedNFTs.value = [];
     };
 
+    const depositAndBeginStaking = async (
+      bank: PublicKey,
+      vault: PublicKey,
+      gemAmount: BN,
+      gemMint: PublicKey,
+      gemSource: PublicKey,
+      creator: PublicKey
+    ) => {
+        const result = await gf.unstakeThenDepositAndStakeWallet(new PublicKey(farm.value!), bank, vault, gemAmount, gemMint, gemSource, creator );
+        return result;
+    };
+
+    const withdrawAndBeginStaking = async (
+      bank: PublicKey,
+      vault: PublicKey,
+      gemAmount: BN,
+      gemMint: PublicKey,
+    ) => {
+      const result = await gf.unstakeThenWithdrawAndStakeWallet(new PublicKey(farm.value!), bank, vault, gemAmount, gemMint);
+        return result;
+    }
+
     const endStaking = async () => {
       await gf.unstakeWallet(new PublicKey(farm.value!));
       // await fetchFarmer();
@@ -227,6 +259,10 @@ export default defineComponent({
     };
 
     const handleRefreshFarmer = async () => {
+      await gf.refreshFarmerWallet(
+        new PublicKey(farm.value!),
+        new PublicKey(publicKey.value!)
+      );
       await fetchFarmer();
     };
 
@@ -283,6 +319,8 @@ export default defineComponent({
       initFarmer,
       beginStaking,
       endStaking,
+      depositAndBeginStaking,
+      withdrawAndBeginStaking,
       claim,
       handleRefreshFarmer,
       selectedNFTs,

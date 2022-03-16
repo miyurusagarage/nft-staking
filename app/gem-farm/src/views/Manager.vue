@@ -1,63 +1,65 @@
 <template>
-  <ConfigPane />
-  <div v-if="!wallet" class="text-center">Pls connect (burner) wallet</div>
-  <div v-else>
-    <div class="flex mb-10 w-full justify-center">
-      <button
-        class="nes-btn is-primary mr-5"
-        @click="showNewFarm = !showNewFarm"
-      >
-        New farm
-      </button>
-      <button class="nes-btn" @click="refreshFarms">Refetch farms</button>
-    </div>
-
-    <!--new farm-->
-    <div v-if="showNewFarm">
-      <TestMint class="mb-10" />
-      <InitFarm class="mb-10" @new-farm="handleNewFarm" />
-    </div>
-
-    <!--existing farms-->
-    <div v-if="foundFarms && foundFarms.length">
-      <!--farm selector-->
-      <div class="nes-container with-title mb-10">
-        <p class="title">Farm Details</p>
-        <p class="mb-2">Choose farm:</p>
-        <div class="nes-select mb-5">
-          <select v-model="farm">
-            <option v-for="f in foundFarms" :key="f.publicKey.toBase58()">
-              {{ f.publicKey.toBase58() }}
-            </option>
-          </select>
-        </div>
-        <FarmDisplay :key="farmAcc" :farmAcc="farmAcc" />
+  <div class="manager-view">
+    <ConfigPane />
+    <div v-if="!wallet" class="text-center">Pls connect (burner) wallet</div>
+    <div v-else>
+      <div class="flex mb-10 w-full justify-center">
+        <button
+          class="nes-btn is-primary mr-5"
+          @click="showNewFarm = !showNewFarm"
+        >
+          New farm
+        </button>
+        <button class="nes-btn" @click="refreshFarms">Refetch farms</button>
       </div>
-      <!--update farm-->
-      <UpdateFarm :farm="farm" @update-farm="handleUpdateFarm" class="mb-10" />
-      <!--manage NFT types-->
-      <TheWhitelist
-        :key="farmAcc.bank"
-        :farm="farm"
-        :bank="farmAcc.bank.toBase58()"
-        class="mb-10"
-      />
-      <!--manage funders-->
-      <AuthorizeFunder :key="farm" :farm="farm" class="mb-10" />
-      <!--manage funding-->
-      <FundCancelLock
-        :farm="farm"
-        :farmAcc="farmAcc"
-        class="mb-10"
-        @update-farm="handleUpdateFarm"
-      />
-      <!--refresh farmer-->
-      <RefreshFarmer :farm="farm" class="mb-10" />
-      <!--treasury payout-->
-      <TreasuryPayout :key="farmAcc" :farm="farm" class="mb-10" />
+
+      <!--new farm-->
+      <div v-if="showNewFarm">
+        <TestMint class="mb-10" />
+        <InitFarm class="mb-10" @new-farm="handleNewFarm" />
+      </div>
+
+      <!--existing farms-->
+      <div v-if="foundFarms && foundFarms.length">
+        <!--farm selector-->
+        <div class="nes-container with-title mb-10">
+          <p class="title">Farm Details</p>
+          <p class="mb-2">Choose farm:</p>
+          <div class="nes-select mb-5">
+            <select v-model="farm">
+              <option v-for="f in foundFarms" :key="f.publicKey.toBase58()">
+                {{ f.publicKey.toBase58() }}
+              </option>
+            </select>
+          </div>
+          <FarmDisplay :key="farmAcc" :farmAcc="farmAcc" />
+        </div>
+        <!--update farm-->
+        <UpdateFarm :farm="farm" @update-farm="handleUpdateFarm" class="mb-10" />
+        <!--manage NFT types-->
+        <TheWhitelist
+          :key="farmAcc.bank"
+          :farm="farm"
+          :bank="farmAcc.bank.toBase58()"
+          class="mb-10"
+        />
+        <!--manage funders-->
+        <AuthorizeFunder :key="farm" :farm="farm" class="mb-10" />
+        <!--manage funding-->
+        <FundCancelLock
+          :farm="farm"
+          :farmAcc="farmAcc"
+          class="mb-10"
+          @update-farm="handleUpdateFarm"
+        />
+        <!--refresh farmer-->
+        <RefreshFarmer :farm="farm" class="mb-10" />
+        <!--treasury payout-->
+        <TreasuryPayout :key="farmAcc" :farm="farm" class="mb-10" />
+      </div>
+      <div v-else-if="isLoading" class="text-center">Loading...</div>
+      <div v-else class="text-center">No farms found :( Start a new one?</div>
     </div>
-    <div v-else-if="isLoading" class="text-center">Loading...</div>
-    <div v-else class="text-center">No farms found :( Start a new one?</div>
   </div>
 </template>
 
@@ -175,4 +177,6 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>
