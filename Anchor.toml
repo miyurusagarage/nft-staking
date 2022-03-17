@@ -1,13 +1,13 @@
 [programs.localnet]
-gem_bank = "bankHHdqMuaaST4qQk6mkzxGeKPHWmqdgor6Gs8r88m"
-gem_farm = "farmL4xeBFVXJqtfxCzU9b28QACM7E2W2ctT6epAjvE"
+gem_bank = "BNnBQXUwpC3B2wnhuoUND4WxLd55CDnTipYiVJY9LgMD"
+gem_farm = "5r7yDN7ku1rKotMZGJTVaAG5XUtQeNUddGkKUyFQnxmE"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
 cluster = "localnet"
-wallet = "/Users/ilmoi/.config/solana/id.json"
+wallet = "/Users/miyurusagarage/.config/solana/juju/juju-mint-authority-mainnet.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

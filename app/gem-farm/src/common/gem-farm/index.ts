@@ -266,7 +266,8 @@ export class GemFarm extends GemFarmClient {
     gemAmount: BN,
     gemMint: PublicKey,
     gemSource: PublicKey,
-    creator: PublicKey) {
+    creator: PublicKey,
+    shouldUnstake: boolean) {
 
     const [mintProof, bump] = await findWhitelistProofPDA(bank, gemMint);
     const [creatorProof, bump2] = await findWhitelistProofPDA(bank, creator);
@@ -283,7 +284,8 @@ export class GemFarm extends GemFarmClient {
       gemSource,
       mintProof,
       metadata,
-      creatorProof);
+      creatorProof,
+      shouldUnstake);
     
     console.log('ended staking for farmer', this.wallet.publicKey.toBase58());
 
@@ -295,7 +297,8 @@ export class GemFarm extends GemFarmClient {
     bank: PublicKey,
     vault: PublicKey,
     gemAmount: BN,
-    gemMint: PublicKey) {
+    gemMint: PublicKey,
+    shouldStake: boolean) {
 
     const result = await this.unstakeThenWithdrawAndStake(
       farm, 
@@ -305,7 +308,8 @@ export class GemFarm extends GemFarmClient {
       this.wallet.publicKey,
       gemAmount,
       gemMint,
-      this.wallet.publicKey);
+      this.wallet.publicKey,
+      shouldStake);
     
     console.log('ended staking for farmer', this.wallet.publicKey.toBase58());
 

@@ -36,7 +36,7 @@ const gem_common_1 = require("../gem-common");
 const gem_bank_1 = require("../gem-bank");
 const spl_token_1 = require("@solana/spl-token");
 const gem_farm_pda_1 = require("./gem-farm.pda");
-exports.feeAccount = new web3_js_1.PublicKey('2xhBxVVuXkdq2MRKerE9mr2s1szfHSedy21MVqf8gPoM');
+exports.feeAccount = new web3_js_1.PublicKey('jujunGU1ne8SJx1JMWxLxAnK4xTxN1JH6yx5MgSyEdD');
 //acts as an enum
 exports.RewardType = {
     Variable: { variable: {} },

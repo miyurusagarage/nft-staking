@@ -146,7 +146,7 @@ export default defineComponent({
     const availableA = ref<string>();
     const availableB = ref<string>();
 
-    farm.value = "5gr1TSwzymmfkpgNVER9GQm33HrAB229RVrtVAVKWMMD";
+    farm.value = "EAepnxAv8dMdPnkNLCV3U2c2ZizmDqiiXYG74setQDe5";
 
     //auto loading for when farm changes
     watch(farm, async () => {
@@ -229,7 +229,7 @@ export default defineComponent({
       gemSource: PublicKey,
       creator: PublicKey
     ) => {
-        const result = await gf.unstakeThenDepositAndStakeWallet(new PublicKey(farm.value!), bank, vault, gemAmount, gemMint, gemSource, creator );
+        const result = await gf.unstakeThenDepositAndStakeWallet(new PublicKey(farm.value!), bank, vault, gemAmount, gemMint, gemSource, creator, farmerState.value !== 'unstaked' );
         return result;
     };
 
@@ -238,8 +238,9 @@ export default defineComponent({
       vault: PublicKey,
       gemAmount: BN,
       gemMint: PublicKey,
+      shouldStake: boolean
     ) => {
-      const result = await gf.unstakeThenWithdrawAndStakeWallet(new PublicKey(farm.value!), bank, vault, gemAmount, gemMint);
+      const result = await gf.unstakeThenWithdrawAndStakeWallet(new PublicKey(farm.value!), bank, vault, gemAmount, gemMint, shouldStake);
         return result;
     }
 

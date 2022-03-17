@@ -266,7 +266,8 @@ export default defineComponent({
               bank.value,
               vault.value,
               new BN(1),
-              nft.mint
+              nft.mint,
+              desiredVaultNFTs.value.length > 0
             );
           }
           await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
@@ -277,6 +278,7 @@ export default defineComponent({
           selectedWalletNFTs.value = selectedVaultNFTs.value;
           moveNFTsToVault();
           selectedVaultNFTs.value = [];
+          selectedWalletNFTs.value = [];
         }
         
         isLoading.value = false;
@@ -319,6 +321,7 @@ export default defineComponent({
           selectedVaultNFTs.value = selectedWalletNFTs.value;
           moveNFTsToWallet();
           selectedWalletNFTs.value = [];
+          selectedVaultNFTs.value = [];
           isLoading.value = false;
         }
 

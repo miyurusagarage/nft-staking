@@ -36,7 +36,7 @@ const gem_common_1 = require("../gem-common");
 const gem_bank_1 = require("../gem-bank");
 const spl_token_1 = require("@solana/spl-token");
 const gem_farm_pda_1 = require("./gem-farm.pda");
-exports.feeAccount = new web3_js_1.PublicKey('2xhBxVVuXkdq2MRKerE9mr2s1szfHSedy21MVqf8gPoM');
+exports.feeAccount = new web3_js_1.PublicKey('jujunGU1ne8SJx1JMWxLxAnK4xTxN1JH6yx5MgSyEdD');
 //acts as an enum
 exports.RewardType = {
     Variable: { variable: {} },
@@ -416,7 +416,7 @@ class GemFarmClient extends gem_bank_1.GemBankClient {
             };
         });
     }
-    unstakeThenWithdrawAndStake(farm, farmerIdentity, bank, vault, vaultOwner, gemAmount, gemMint, receiver) {
+    unstakeThenWithdrawAndStake(farm, farmerIdentity, bank, vault, vaultOwner, gemAmount, gemMint, receiver, shouldStake) {
         return __awaiter(this, void 0, void 0, function* () {
             // Withdraw Gems
             const [gemBox, gemBoxBump] = yield (0, gem_bank_1.findGemBoxPDA)(vault, gemMint);
@@ -501,7 +501,10 @@ class GemFarmClient extends gem_bank_1.GemBankClient {
             tx.add(unstakeIx);
             tx.add(unstakeIx);
             tx.add(widthdrawIx);
-            tx.add(stakeIx);
+            if (shouldStake) 
+            {
+                tx.add(stakeIx);
+            }
             tx = yield this.wallet.signTransaction(tx);
             if (signers.length > 0) {
                 tx.partialSign(...signers);
@@ -522,7 +525,7 @@ class GemFarmClient extends gem_bank_1.GemBankClient {
             };
         });
     }
-    unstakeThenDepositAndStake(farm, farmerIdentity, bank, vault, vaultOwner, gemAmount, gemMint, gemSource, mintProof, metadata, creatorProof) {
+    unstakeThenDepositAndStake(farm, farmerIdentity, bank, vault, vaultOwner, gemAmount, gemMint, gemSource, mintProof, metadata, creatorProof, shouldUnstake) {
         return __awaiter(this, void 0, void 0, function* () {
             // Deposit Gems
             const [gemBox, gemBoxBump] = yield (0, gem_bank_1.findGemBoxPDA)(vault, gemMint);
@@ -622,8 +625,10 @@ class GemFarmClient extends gem_bank_1.GemBankClient {
                 feePayer: this.wallet.publicKey,
                 recentBlockhash: (yield this.conn.getRecentBlockhash()).blockhash,
             });
-            tx.add(unstakeIx);
-            tx.add(unstakeIx);
+            if (shouldUnstake) {
+                tx.add(unstakeIx);
+                tx.add(unstakeIx);
+            }
             tx.add(depositIx);
             tx.add(stakeIx);
             tx = yield this.wallet.signTransaction(tx);

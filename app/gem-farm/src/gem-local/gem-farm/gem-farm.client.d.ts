@@ -996,7 +996,7 @@ export declare class GemFarmClient extends GemBankClient {
         farmTreasuryBump: number;
         txSig: any;
     }>;
-    unstakeThenDepositAndStake(farm: PublicKey, farmerIdentity: PublicKey | Keypair, bank: PublicKey, vault: PublicKey, vaultOwner: PublicKey | Keypair, gemAmount: BN, gemMint: PublicKey, gemSource: PublicKey, mintProof?: PublicKey, metadata?: PublicKey, creatorProof?: PublicKey): Promise<{
+    unstakeThenDepositAndStake(farm: PublicKey, farmerIdentity: PublicKey | Keypair, bank: PublicKey, vault: PublicKey, vaultOwner: PublicKey | Keypair, gemAmount: BN, gemMint: PublicKey, gemSource: PublicKey, mintProof?: PublicKey, metadata?: PublicKey, creatorProof?: PublicKey, shouldUnstake: boolean): Promise<{
         farmer: anchor.web3.PublicKey;
         farmerBump: number;
         vault: anchor.web3.PublicKey;
@@ -1007,7 +1007,7 @@ export declare class GemFarmClient extends GemBankClient {
         farmTreasuryBump: number;
         txSig: any;
     }>;
-    unstakeThenWithdrawAndStake(farm: PublicKey, farmerIdentity: PublicKey | Keypair, bank: PublicKey, vault: PublicKey, vaultOwner: PublicKey | Keypair, gemAmount: BN, gemMint: PublicKey, receiver: PublicKey): Promise<{
+    unstakeThenWithdrawAndStake(farm: PublicKey, farmerIdentity: PublicKey | Keypair, bank: PublicKey, vault: PublicKey, vaultOwner: PublicKey | Keypair, gemAmount: BN, gemMint: PublicKey, receiver: PublicKey, shouldStake: boolean): Promise<{
         farmer: anchor.web3.PublicKey;
         farmerBump: number;
         vault: anchor.web3.PublicKey;
