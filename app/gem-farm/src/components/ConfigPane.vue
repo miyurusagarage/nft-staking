@@ -28,7 +28,7 @@ export default defineComponent({
       },
     });
 
-    setCluster(Cluster.Devnet);
+    setCluster(Cluster.Mainnet);
 
     return {
       Cluster,

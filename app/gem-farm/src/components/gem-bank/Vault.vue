@@ -30,7 +30,7 @@
             class="mb-3"
             size="large"
           >
-            <a-select-option value="Collection_Name" label="JuJu Devils">
+            <a-select-option value="JuJu Devils" label="JuJu Devils">
               <div class="flex flex-row">
                 <span><img style="width: 40px" src="../../assets/juju-logo.png"></span>
                 <div class="ml-5 flex items-center">
@@ -97,7 +97,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch, computed } from 'vue';
+import { defineComponent, onMounted, ref, watch, computed, handleError } from 'vue';
 import NFTGrid from '@/components/gem-bank/NFTGrid.vue';
 import ArrowButton from '@/components/ArrowButton.vue';
 import useWallet from '@/composables/wallet';
@@ -112,6 +112,7 @@ import { PublicKey } from '@solana/web3.js';
 import { getListDiffBasedOnMints, removeManyFromList } from '@/common/util';
 import { BN } from '@project-serum/anchor';
 import { Func } from 'mocha';
+import { message } from 'ant-design-vue';
 
 export default defineComponent({
   components: { ArrowButton, NFTGrid },
@@ -145,8 +146,7 @@ export default defineComponent({
     const toWalletNFTs = ref<INFT[]>([]);
     const toVaultNFTs = ref<INFT[]>([]);
 
-    const collectionFilter = ref<string[]>(["Collection_Name"]);
-    const enabledCollections = ["Collection_Name", "numbers"];
+    const collectionFilter = ref<string[]>(["JuJu Devils"]);
 
     const isLoading = ref<boolean>(false);
 
@@ -159,13 +159,19 @@ export default defineComponent({
       desiredWalletNFTs.value = [];
 
       if (wallet.value) {
-        currentWalletNFTs.value = await getNFTsByOwner(
-          publicKey.value!,
-          getConnection()
-        );
-        desiredWalletNFTs.value = [...currentWalletNFTs.value];
-
-        console.log(desiredWalletNFTs.value);
+        isLoading.value = true;
+        try {
+          currentWalletNFTs.value = await getNFTsByOwner(
+            publicKey.value!,
+            getConnection()
+          );
+          isLoading.value = false;
+          desiredWalletNFTs.value = [...currentWalletNFTs.value];
+        }catch(e) {
+          isLoading.value = false;
+          console.log(e)
+          handleError(e)
+        }
       }
     };
 
@@ -191,7 +197,6 @@ export default defineComponent({
         console.log(
           `populated a total of ${currentVaultNFTs.value.length} vault NFTs`
         );
-        console.log(desiredVaultNFTs.value)
       }
     };
 
@@ -200,6 +205,11 @@ export default defineComponent({
       bank.value = vaultAcc.value.bank;
       vaultLocked.value = vaultAcc.value.locked;
     };
+
+    const handleError = (e) => {
+        message.error(e.message, 5);
+        console.log("Error : " + e.message)
+    }
 
     watch([wallet, cluster], async () => {
       gb = await initGemBank(getConnection(), wallet.value);
@@ -273,8 +283,7 @@ export default defineComponent({
           await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
           refreshFarmer();
         } catch(e) {
-          alert(e)
-          console.log(e)
+          handleError(e)
           selectedWalletNFTs.value = selectedVaultNFTs.value;
           moveNFTsToVault();
           selectedVaultNFTs.value = [];
@@ -296,7 +305,7 @@ export default defineComponent({
         
         try {
           for (const nft of toVaultNFTs.value) {
-            console.log(nft);
+            // console.log(nft);
             const creator = new PublicKey(
               //todo currently simply taking the 1st creator
               (nft.onchainMetadata as any).data.creators[0].address
@@ -316,8 +325,7 @@ export default defineComponent({
           }
           selectedWalletNFTs.value = [];
         } catch(e) {
-          alert(e);
-          console.log(e)
+          handleError(e);
           selectedVaultNFTs.value = selectedWalletNFTs.value;
           moveNFTsToWallet();
           selectedWalletNFTs.value = [];
@@ -353,7 +361,7 @@ export default defineComponent({
           desiredVaultNFTs.value,
           currentVaultNFTs.value
         );
-        console.log('to vault nfts are', toVaultNFTs.value);
+        // console.log('to vault nfts are', toVaultNFTs.value);
       },
       { deep: true }
     );
@@ -366,7 +374,7 @@ export default defineComponent({
           desiredWalletNFTs.value,
           currentWalletNFTs.value
         );
-        console.log('to wallet nfts are', toWalletNFTs.value);
+        // console.log('to wallet nfts are', toWalletNFTs.value);
       },
       { deep: true }
     );
@@ -409,9 +417,11 @@ export default defineComponent({
     // --------------------------------------- return
 
     const computedDesiredWalletNFTs = computed(()=> {
-      // if (!collectionFilter || collectionFilter.value.length == 0 || !desiredWalletNFTs.value) return desiredWalletNFTs;
-      var filteredNFTs = desiredWalletNFTs.value.filter(i => collectionFilter.value.length < 1 || (i.externalMetadata as any).collection && collectionFilter.value.indexOf((i.externalMetadata as any).collection.name) != -1);
-      return filteredNFTs.filter(i => (i.externalMetadata as any).collection && enabledCollections.indexOf((i.externalMetadata as any).collection.name) != -1);
+      return desiredWalletNFTs.value.filter(i => {
+        return collectionFilter.value.length < 1 || 
+          i.externalMetadata && collectionFilter.value.filter(val => (i.externalMetadata as any).name.includes(val)).length > 0;
+      })
+      // return filteredNFTs.filter(i => i.externalMetadata && collectionFilter.value.filter(val => (i.externalMetadata as any).name.includes(val)).length > 0);
     });
 
     return {
@@ -433,7 +443,6 @@ export default defineComponent({
       vaultLocked,
       collectionFilter,
       computedDesiredWalletNFTs,
-      enabledCollections,
       isLoading,
       farmerState: props.farmerState,
       startStaking

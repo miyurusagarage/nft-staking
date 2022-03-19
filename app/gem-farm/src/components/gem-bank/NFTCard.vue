@@ -59,6 +59,12 @@ img {
   }
 }
 
+@media screen and (min-width: 768px) {
+  .card {
+    flex-basis: calc(33.2% - 0.25rem);
+  }
+}
+
 @media screen and (min-width: 1024px) {
   .card {
     flex-basis: calc(50% - 0.25rem);
@@ -73,7 +79,7 @@ img {
 
 @media screen and (min-width: 1536px) {
   .card {
-    flex-basis: calc(25% - 0.25rem);
+    flex-basis: calc(33.2% - 0.25rem);
   }
 }
 

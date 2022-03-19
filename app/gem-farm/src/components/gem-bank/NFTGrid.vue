@@ -1,5 +1,5 @@
 <template>
-  <div class="nes-container with-title">
+  <div class="nes-container with-title" v-bind:style="[title === 'Your wallet' ? 'max-height: 600px; overflow:scroll' : 'overflow:scroll']">
     <p class="title">{{ title }}</p>
     <hr/>
     <slot />

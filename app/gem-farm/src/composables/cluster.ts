@@ -9,7 +9,7 @@ export enum Cluster {
 }
 
 const clusterURLMapping = {
-  mainnet: process.env.VUE_APP_MAINNET_URL || 'https://ssc-dao.genesysgo.net/',
+  mainnet: process.env.VUE_APP_MAINNET_URL || 'https://icy-aged-snowflake.solana-mainnet.quiknode.pro/0e1a1a199b4b9684ae26b5e54eaf06b57129c1fa/',
   devnet: process.env.VUE_APP_DEVNET_URL || 'https://api.devnet.solana.com',
   testnet: process.env.VUE_APP_TESTNET_URL || 'https://api.testnet.solana.com',
   localnet: process.env.VUE_APP_LOCALNET_URL || 'http://localhost:8899',

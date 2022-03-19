@@ -15,5 +15,5 @@ const web3_js_1 = require("@solana/web3.js");
 __exportStar(require("./gem-bank"), exports);
 __exportStar(require("./gem-farm"), exports);
 __exportStar(require("./gem-common"), exports);
-exports.GEM_BANK_PROG_ID = new web3_js_1.PublicKey('BNnBQXUwpC3B2wnhuoUND4WxLd55CDnTipYiVJY9LgMD');
-exports.GEM_FARM_PROG_ID = new web3_js_1.PublicKey('5r7yDN7ku1rKotMZGJTVaAG5XUtQeNUddGkKUyFQnxmE');
+exports.GEM_BANK_PROG_ID = new web3_js_1.PublicKey('jbMAZYjZhMdCUyqr8A5jH7mraSJZgJPK7EF6uEq9w8q');
+exports.GEM_FARM_PROG_ID = new web3_js_1.PublicKey('jfAAEGKDsddqwMZPtcF6xGm2WgPRWwfrkZ6Eo3jiFzb');

@@ -59,7 +59,6 @@ export async function getNFTMetadataForMany(
   tokens.forEach((t) => promises.push(getNFTMetadata(t.mint, conn, t.pubkey)));
   const nfts = (await Promise.all(promises)).filter((n) => !!n);
   console.log(`found ${nfts.length} metadatas`);
-  console.log(nfts)
   return nfts as INFT[];
 }
 

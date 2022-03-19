@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 #app {
-    background-image: url("./assets/background-website.jpeg") !important;
+    background: black !important;
     background-position: 50%;
     background-size: cover;
 }
@@ -16,7 +16,18 @@
     border-color: #e5e5e5;
     min-height: 200px;
     background-color: rgba(16,16,80,.66);
-    min-width: 350px !important;
+}
+
+@media screen and (min-width: 500px) {
+    .nes-container {
+        min-width: 460px !important;
+    }
+}
+
+@media screen and (min-width: 549px) {
+    .nes-container {
+        min-width: 480px !important;
+    }
 }
 
 .nes-container.with-title>.title {
@@ -103,4 +114,16 @@ html {
 
 .manager-view * {
     color: #959595 !important;
-  }
+}
+
+.ant-message-notice-content {
+    background-color: #3d3d3d !important;
+}
+
+.ant-message .anticon {
+    top: -3px !important;
+}
+
+.ant-spin-blur {
+    padding: 30px 0 !important;
+}
