@@ -1,6 +1,8 @@
 <template>
   <nav class="flex flex-row justify-between items-center py-2 px-5">
-    <img src="../assets/juju-logo.png" style="height: 70px"/>
+    <a href="/">
+      <img src="../assets/juju-logo.png" style="height: 70px"/>
+    </a>
     <TheCat />
   </nav>
 </template>

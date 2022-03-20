@@ -215,7 +215,7 @@ export default defineComponent({
       gb = await initGemBank(getConnection(), wallet.value);
 
       //populate wallet + vault nfts
-      await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
+      //await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
     });
 
     onMounted(async () => {
@@ -226,7 +226,7 @@ export default defineComponent({
       await updateVaultState();
 
       //populate wallet + vault nfts
-      await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
+      // await Promise.all([populateWalletNFTs(), populateVaultNFTs()]);
     });
 
     // --------------------------------------- moving nfts

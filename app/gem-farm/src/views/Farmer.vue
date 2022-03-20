@@ -27,15 +27,13 @@
 
         <div class="nes-container with-title">
           <p class="title">Your Staking Account</p>
-          <hr/>
+          <p style="color:#ff7000">Always refresh before claiming</p>
+          <hr class="mt-2"/>
           <div class="card-container mt-3">
 
             <div class="text-lg flex flex-row flex-wrap gap-4">
               <a-button type="primary" size="large" @click="handleRefreshFarmer">
                 Refresh rewards
-              </a-button>
-              <a-button type="primary" size="large" @click="claim" :disabled="availableB <= 0">
-                Claim {{availableB}} Accrued $JU
               </a-button>
             </div>
             <br/>
@@ -48,9 +46,13 @@
             <div class="text-lg flex flex-row align-center">
               <div class="mr-4">$JU to be paid out : {{availableB}} $JU</div>
             </div>
-            <br/>
+            <div class="mt-5 mb-5">
+              <a-button type="primary" size="large" @click="claim" :disabled="availableB <= 0">
+                Claim {{availableB}} Accrued $JU
+              </a-button>
+            </div>
             <div class="text-lg flex flex-row">
-              <div class="text-lg">$JU Paid out : {{(farmerAcc.rewardB.paidOutReward/1000000000).toFixed(7)}} $JU</div>
+              <div class="text-lg">$JU Paid out : {{(farmerAcc.rewardB.paidOutReward/1000000000).toFixed(3)}} $JU</div>
             </div>
           </div>
         </div>
@@ -135,7 +137,7 @@ export default defineComponent({
         .sub(farmerAcc.value.rewardB.paidOutReward)
         .toNumber()/1000000000;
 
-        availableB.value = accrued.toFixed(7).toString()
+        availableB.value = accrued.toFixed(3).toString()
     };
 
     const fetchFarn = async () => {
